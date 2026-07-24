@@ -1,3 +1,5 @@
+import { getSharedAudioContext, unlockSharedAudioContext } from "./sharedAudioContext";
+
 /**
  * Every sound in Obsidian Break is synthesized at runtime through the
  * Web Audio API. This keeps the production bundle free of binary
@@ -5,22 +7,14 @@
  * low-frequency palette as the visuals.
  */
 export class AudioEngine {
-  private ctx: AudioContext | null = null;
   private enabled = true;
 
   private getContext(): AudioContext {
-    if (!this.ctx) {
-      const AudioCtor =
-        window.AudioContext ||
-        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-      this.ctx = new AudioCtor();
-    }
-    return this.ctx;
+    return getSharedAudioContext();
   }
 
   resume(): void {
-    const ctx = this.getContext();
-    if (ctx.state === "suspended") void ctx.resume();
+    unlockSharedAudioContext();
   }
 
   setEnabled(enabled: boolean): void {
@@ -30,6 +24,7 @@ export class AudioEngine {
   private tone(freq: number, duration: number, type: OscillatorType, gainValue: number): void {
     if (!this.enabled) return;
     const ctx = this.getContext();
+    if (ctx.state === "suspended") void ctx.resume();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.type = type;

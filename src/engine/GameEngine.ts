@@ -59,6 +59,7 @@ export class GameEngine {
   private activePowerUps = new Map<PowerUpKind, number>();
   private timeScale = 1;
   private highestUnlockedLevel = 0;
+  private dragOffset = 0;
 
   constructor(canvas: HTMLCanvasElement) {
     const ctx = canvas.getContext("2d");
@@ -77,7 +78,7 @@ export class GameEngine {
     canvas.style.height = `${height}px`;
     this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     if (this.paddle) {
-      this.paddle.setBounds(12, width - 12);
+      this.paddle.setBounds(4, width - 4);
       this.paddle.position = new Vector2(width / 2, height - PADDLE_Y_OFFSET);
       this.paddle.targetX = width / 2;
     }
@@ -108,7 +109,7 @@ export class GameEngine {
       def.paddleWidth,
       PADDLE_HEIGHT,
     );
-    this.paddle.setBounds(12, this.width - 12);
+    this.paddle.setBounds(4, this.width - 4);
     this.powerUps = [];
     this.activePowerUps.clear();
     this.particles.clear();
@@ -230,11 +231,20 @@ export class GameEngine {
   }
 
   private updatePaddle(dt: number): void {
+    const freshDown = this.input.consumeFreshPointerDown();
+    if (freshDown) {
+      // Touch: grab the paddle wherever it currently is and keep that
+      // same relative offset to the finger for the whole drag, so the
+      // paddle follows the drag instead of jumping to the touch point.
+      // Mouse: track the cursor directly, which is the expected desktop feel.
+      this.dragOffset = freshDown.isTouch ? this.paddle.position.x - freshDown.x : 0;
+    }
+
     const keyboardX = this.input.stepKeyboard(this.paddle.position.x, dt, this.width);
     if (keyboardX !== null) {
       this.paddle.setTarget(keyboardX);
     } else if (this.input.pointerActive && this.input.pointerX !== null) {
-      this.paddle.setTarget(this.input.pointerX);
+      this.paddle.setTarget(this.input.pointerX + this.dragOffset);
     }
 
     if (this.assist === "auto") {

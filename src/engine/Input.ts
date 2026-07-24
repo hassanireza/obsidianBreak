@@ -11,6 +11,8 @@ export class InputController {
   private keyLeft = false;
   private keyRight = false;
   private keyboardX: number | null = null;
+  private freshPointerDown = false;
+  private lastPointerIsTouch = false;
 
   attach(canvas: HTMLCanvasElement): () => void {
     const toCanvasX = (clientX: number): number => {
@@ -24,9 +26,16 @@ export class InputController {
       this.pointerActive = true;
     };
     const onPointerDown = (e: PointerEvent) => {
+      // Keep receiving move events for this pointer even if the finger
+      // drifts outside the canvas bounds mid-drag, which is what made
+      // the right edge feel "locked" on mobile: without capture, fast
+      // drags near the screen edge lost their move events entirely.
+      canvas.setPointerCapture?.(e.pointerId);
       this.pointerX = toCanvasX(e.clientX);
       this.pointerActive = true;
       this.launchRequested = true;
+      this.freshPointerDown = true;
+      this.lastPointerIsTouch = e.pointerType === "touch" || e.pointerType === "pen";
     };
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowLeft" || e.key === "a") {
@@ -78,5 +87,19 @@ export class InputController {
       return true;
     }
     return false;
+  }
+
+  /**
+   * Returns the touch/mouse-down x and pointer kind exactly once per
+   * press, so the engine can decide how to grab the paddle: touch
+   * drags are relative to where the finger first lands (so the
+   * paddle follows finger movement instead of teleporting under it),
+   * while mouse stays absolute since desktop users expect the paddle
+   * to track the cursor directly.
+   */
+  consumeFreshPointerDown(): { x: number; isTouch: boolean } | null {
+    if (!this.freshPointerDown) return null;
+    this.freshPointerDown = false;
+    return { x: this.pointerX ?? 0, isTouch: this.lastPointerIsTouch };
   }
 }
