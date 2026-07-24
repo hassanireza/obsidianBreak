@@ -1,0 +1,28 @@
+:root {
+  --color-bg: #0a0a0c;
+  --color-charcoal: #1c1e22;
+  --color-shadow: #12151c;
+  --color-bone: #e8e4da;
+  --color-silver: #8a8f92;
+  --color-bone-dim: #a8a49a;
+  --color-hairline: rgba(232, 228, 218, 0.12);
+  --color-hairline-strong: rgba(232, 228, 218, 0.22);
+
+  --font-display: "Fraunces", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --font-body: "Inter", "Helvetica Neue", Arial, sans-serif;
+
+  --tracking-label: 0.22em;
+  --tracking-wide: 0.08em;
+
+  --ease-critical: cubic-bezier(0.16, 0.5, 0.1, 1);
+  --duration-slow: 1200ms;
+  --duration-med: 900ms;
+  --duration-fast: 420ms;
+
+  --gap-section: clamp(64px, 10vw, 140px);
+  --edge: clamp(16px, 5vw, 56px);
+  --max-content: 720px;
+
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
