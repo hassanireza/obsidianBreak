@@ -6,6 +6,7 @@
  */
 export class InputController {
   pointerX: number | null = null;
+  pointerActive = false;
   launchRequested = false;
   private keyLeft = false;
   private keyRight = false;
@@ -20,14 +21,22 @@ export class InputController {
 
     const onPointerMove = (e: PointerEvent) => {
       this.pointerX = toCanvasX(e.clientX);
+      this.pointerActive = true;
     };
     const onPointerDown = (e: PointerEvent) => {
       this.pointerX = toCanvasX(e.clientX);
+      this.pointerActive = true;
       this.launchRequested = true;
     };
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft" || e.key === "a") this.keyLeft = true;
-      if (e.key === "ArrowRight" || e.key === "d") this.keyRight = true;
+      if (e.key === "ArrowLeft" || e.key === "a") {
+        this.keyLeft = true;
+        this.pointerActive = false;
+      }
+      if (e.key === "ArrowRight" || e.key === "d") {
+        this.keyRight = true;
+        this.pointerActive = false;
+      }
       if (e.key === " ") this.launchRequested = true;
     };
     const onKeyUp = (e: KeyboardEvent) => {

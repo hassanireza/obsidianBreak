@@ -218,13 +218,14 @@ export class GameEngine {
     this.updatePowerUps(dt);
     this.particles.update(dt, gravity);
 
-    if (this.balls.length === 0) {
-      this.onLifeLost();
+    if (this.level.cleared) {
+      this.onLevelCleared();
       return;
     }
 
-    if (this.level.cleared) {
-      this.onLevelCleared();
+    if (this.balls.length === 0) {
+      this.onLifeLost();
+      return;
     }
   }
 
@@ -232,7 +233,7 @@ export class GameEngine {
     const keyboardX = this.input.stepKeyboard(this.paddle.position.x, dt, this.width);
     if (keyboardX !== null) {
       this.paddle.setTarget(keyboardX);
-    } else if (this.input.pointerX !== null) {
+    } else if (this.input.pointerActive && this.input.pointerX !== null) {
       this.paddle.setTarget(this.input.pointerX);
     }
 
