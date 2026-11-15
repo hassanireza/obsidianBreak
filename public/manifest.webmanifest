@@ -1,0 +1,12 @@
+{
+  "name": "Obsidian Break",
+  "short_name": "Obsidian Break",
+  "description": "A territory duel against an adaptive AI.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f6eacc",
+  "theme_color": "#f6eacc",
+  "icons": [{ "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
