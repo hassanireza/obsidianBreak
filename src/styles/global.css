@@ -12,6 +12,8 @@
   --font: "Inter", "Helvetica Neue", Arial, sans-serif;
   --serif: "Fraunces", Georgia, serif;
   --page: #f4ecd8;
+  --page-grad: radial-gradient(120% 80% at 50% 0%, #f6eacc, #eadcb8);
+  --solid: #f3e7c8;
   --accent: #d9654f;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -25,6 +27,8 @@
 */
 :root[data-theme="night"] {
   --page: #1a0b03;
+  --page-grad: radial-gradient(120% 80% at 50% 0%, #3a2210, #1a0b03);
+  --solid: #2a180a;
   --panel: rgba(39, 22, 9, 0.88);
   --text: #f6eacc;
   --muted: #bdb09a;
@@ -45,7 +49,7 @@ html,
 body {
   margin: 0;
   height: 100%;
-  background: var(--page);
+  background: var(--page-grad), var(--page);
   color: var(--text);
   font-family: var(--font);
   overscroll-behavior: none;
@@ -71,8 +75,8 @@ img {
 }
 
 #root {
-  height: 100dvh;
-  position: relative;
+  position: fixed;
+  inset: 0;
 }
 
 button {
@@ -101,9 +105,11 @@ dd {
 
 .foam {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  height: 100lvh;
   z-index: 0;
   display: block;
 }
@@ -119,7 +125,7 @@ dd {
 .screen {
   position: relative;
   z-index: 1;
-  height: 100dvh;
+  height: 100%;
   display: flex;
   justify-content: center;
 }
@@ -171,7 +177,7 @@ dd {
   border-radius: 50%;
   display: grid;
   place-items: center;
-  background: var(--panel);
+  background: var(--solid);
   border: 1px solid var(--line);
 }
 
@@ -377,7 +383,7 @@ dd {
 
 .match__column {
   width: min(100vw, 520px);
-  height: 100dvh;
+  height: 100%;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -388,36 +394,6 @@ dd {
 .match__hint {
   margin-inline: 10px;
 }
-.banner {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 52px;
-  z-index: 2;
-  margin: 0 !important;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  pointer-events: none;
-}
-.banner__row {
-  height: 25px;
-  display: grid;
-  place-items: center;
-  font-size: 12px;
-  font-weight: 900;
-  letter-spacing: 0.05em;
-  animation: slideIn 0.28s ease;
-}
-.banner__row--latte {
-  background: var(--cream);
-  color: var(--ink);
-}
-.banner__row--roast {
-  background: var(--brown);
-  color: var(--gold);
-}
-
 .board {
   flex: 1;
   min-height: 0;
@@ -466,19 +442,6 @@ dd {
   text-transform: uppercase;
   animation: shimmer 0.9s ease-in-out infinite;
   pointer-events: none;
-}
-.board__pause {
-  position: absolute;
-  z-index: 3;
-  top: 2px;
-  right: 2px;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background: rgba(27, 15, 7, 0.55);
-  color: var(--cream);
 }
 .bars {
   display: flex;
@@ -533,7 +496,7 @@ dd {
 }
 .cards {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 52px;
   gap: 8px;
   flex: none;
 }
@@ -765,9 +728,6 @@ dd {
 :root[data-theme="night"] .btn--glass {
   background: rgba(246, 234, 204, 0.07);
 }
-:root[data-theme="night"] .banner__row--roast {
-  box-shadow: inset 0 0 0 1px rgba(246, 234, 204, 0.28);
-}
 :root[data-theme="night"] .bars__track {
   box-shadow: inset 0 0 0 1px rgba(246, 234, 204, 0.18);
 }
@@ -796,4 +756,16 @@ dd {
 }
 :root[data-theme="night"] .thumb {
   box-shadow: 0 0 0 1px rgba(246, 234, 204, 0.3);
+}
+
+.pausebtn {
+  min-height: 52px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--track);
+  color: var(--cream);
+}
+:root[data-theme="night"] .pausebtn {
+  box-shadow: inset 0 0 0 1px rgba(246, 234, 204, 0.16);
 }
