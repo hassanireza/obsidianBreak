@@ -21,6 +21,12 @@ The visual layer is a small TouchDesigner style operator network (Voronoi, Feedb
 * **Daily Roast.** One seeded board for everyone, with a Wordle style emoji share.
 * **Generative audio.** Every flipped tile is a pentatonic note, pitched by where it happened.
 
+## Install on iPhone
+
+Open the site in Safari, tap Share, then **Add to Home Screen**. It launches full screen with the game icon, no browser bars. On Android, Chrome offers Install, and the game also asks for full screen when a duel starts.
+
+Zoom, text selection, long press menus and pull to refresh are disabled so nothing interrupts play. Steering uses the first finger only, and the guide sits above your fingertip so your hand never hides it.
+
 ## Run it
 
 ```bash
@@ -48,4 +54,5 @@ npx tsx tools/simtest.ts
 
 * `docs/ARCHITECTURE.md` how the engine, director and visuals fit together
 * `docs/ALGORITHMS.md` every technique, where it lives, and what was deliberately left out
+* `docs/ART_DIRECTION.md` the Day and Night palettes and their contrast ratios
 * `docs/TOUCHDESIGNER.md` how the TouchDesigner approach maps to the web build
