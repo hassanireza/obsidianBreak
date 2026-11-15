@@ -16,6 +16,7 @@ export interface BannerItem {
   id: number;
   label: string;
   team: Team;
+  at: number;
 }
 
 export interface CardView {
@@ -104,6 +105,7 @@ export class DuelEngine {
   private assisting = false;
   private mul = { playerTurn: 1, aiTurn: 1, aiReaction: 1 };
   private well: { x: number; y: number } | null = null;
+  private pointerId: number | null = null;
   private tickedSecond = -1;
   private flipRate = 0;
   private flipsThisFrame = 0;
@@ -112,38 +114,55 @@ export class DuelEngine {
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
     this.renderer = new BoardRenderer(canvas);
+    // Only the first finger steers. Extra fingers, palms and gestures are ignored.
     const down = (e: PointerEvent) => {
+      if (this.pointerId !== null && e.pointerType !== "mouse") return;
+      e.preventDefault();
+      this.pointerId = e.pointerId;
       canvas.setPointerCapture?.(e.pointerId);
       this.setWell(e, e.pointerType !== "mouse");
     };
     const move = (e: PointerEvent) => {
-      if (e.pointerType === "mouse" || this.well) this.setWell(e, e.pointerType !== "mouse");
+      if (e.pointerType === "mouse") {
+        this.setWell(e, false);
+      } else if (e.pointerId === this.pointerId) {
+        e.preventDefault();
+        this.setWell(e, true);
+      }
     };
-    const up = (e: PointerEvent) => {
-      if (e.pointerType !== "mouse") this.well = null;
+    const end = (e: PointerEvent) => {
+      if (e.pointerType === "mouse" && e.type === "pointerup") return;
+      if (e.pointerId === this.pointerId || e.pointerType === "mouse") {
+        this.pointerId = null;
+        this.well = null;
+      }
     };
-    const leave = () => {
-      this.well = null;
-    };
-    canvas.addEventListener("pointerdown", down);
-    canvas.addEventListener("pointermove", move);
-    canvas.addEventListener("pointerup", up);
-    canvas.addEventListener("pointercancel", up);
-    canvas.addEventListener("pointerleave", leave);
+    const opts = { passive: false } as AddEventListenerOptions;
+    canvas.addEventListener("pointerdown", down, opts);
+    canvas.addEventListener("pointermove", move, opts);
+    canvas.addEventListener("pointerup", end);
+    canvas.addEventListener("pointercancel", end);
+    canvas.addEventListener("lostpointercapture", end);
+    canvas.addEventListener("pointerleave", end);
     this.detach = [
       () => canvas.removeEventListener("pointerdown", down),
       () => canvas.removeEventListener("pointermove", move),
-      () => canvas.removeEventListener("pointerup", up),
-      () => canvas.removeEventListener("pointercancel", up),
-      () => canvas.removeEventListener("pointerleave", leave),
+      () => canvas.removeEventListener("pointerup", end),
+      () => canvas.removeEventListener("pointercancel", end),
+      () => canvas.removeEventListener("lostpointercapture", end),
+      () => canvas.removeEventListener("pointerleave", end),
     ];
   }
 
   private setWell(e: PointerEvent, touch: boolean): void {
     if (!this.sim) return;
     const rect = this.canvas.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * this.sim.cols;
-    const y = ((e.clientY - rect.top) / rect.height) * this.sim.rows - (touch ? 2.2 : 0);
+    const cols = this.sim.cols;
+    const rows = this.sim.rows;
+    // The guide sits 44 px above a finger so your hand never hides it.
+    const lift = touch ? 44 / (rect.height / rows) : 0;
+    const x = Math.max(0, Math.min(cols, ((e.clientX - rect.left) / rect.width) * cols));
+    const y = Math.max(0, Math.min(rows, ((e.clientY - rect.top) / rect.height) * rows - lift));
     this.well = { x, y };
   }
 
@@ -277,7 +296,7 @@ export class DuelEngine {
           this.audio.bounce(e.team);
           break;
         case "gift":
-          this.banner.unshift({ id: this.bannerId++, label: GIFTS[e.kind].label, team: e.team });
+          this.banner.unshift({ id: this.bannerId++, label: GIFTS[e.kind].label, team: e.team, at: this.clock });
           this.banner = this.banner.slice(0, 4);
           this.audio.gift();
           if (e.team === 0) buzz([10, 20, 10]);
@@ -383,6 +402,8 @@ export class DuelEngine {
   private emitHud(): void {
     const sim = this.sim;
     if (!sim) return;
+    // Banner entries fade out after a few seconds so the board stays clear.
+    this.banner = this.banner.filter((b) => this.clock - b.at < 5);
     const cards: CardView[] = sim.cards[0].map((kind) => ({
       kind,
       label: GIFTS[kind].label,
