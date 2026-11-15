@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Obsidian Break: a brick-breaking ritual, built for the Obsidian game center.",
+  "description": "Obsidian Break: Latte vs Roast, a territory duel against an adaptive AI.",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
