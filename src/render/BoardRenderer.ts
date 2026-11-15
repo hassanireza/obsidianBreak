@@ -12,8 +12,15 @@ export const COLORS = {
   coral: "#d9654f",
 };
 
+export interface BannerLine {
+  label: string;
+  team: 0 | 1;
+  at: number;
+}
+
 export interface ViewState {
   time: number;
+  banner: BannerLine[];
   flipAnim: Float32Array;
   well: Well | null;
   quality: 0 | 1 | 2;
@@ -196,6 +203,43 @@ export class BoardRenderer {
     }
 
     for (const b of sim.balls) this.drawBall(b, v);
+    this.drawBanner(sim.cols * s, v);
+  }
+
+  /**
+   * Gift announcements are drawn inside the canvas. Canvas text is
+   * rasterized at device resolution, so it stays sharp on iPhone, and it
+   * is centered on the board exactly.
+   */
+  private drawBanner(boardW: number, v: ViewState): void {
+    const ctx = this.ctx;
+    const rowH = Math.max(22, Math.round(this.cell * 1.3));
+    const font = Math.round(rowH * 0.46);
+    const margin = 8;
+    const w = Math.round(boardW - margin * 2);
+    let y = margin;
+    ctx.save();
+    ctx.font = `800 ${font}px Inter, "Helvetica Neue", Arial, sans-serif`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    if ("letterSpacing" in ctx) (ctx as CanvasRenderingContext2D & { letterSpacing: string }).letterSpacing = "0.6px";
+    for (const item of v.banner.slice(0, 3)) {
+      const age = v.time - item.at;
+      if (age < 0 || age > 5) continue;
+      const alpha = Math.min(1, age / 0.25) * Math.min(1, (5 - age) / 0.8);
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = item.team === 0 ? COLORS.cream : COLORS.brown;
+      ctx.fillRect(margin, y, w, rowH);
+      if (item.team === 1) {
+        ctx.strokeStyle = "rgba(246,234,204,0.3)";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(margin + 0.5, y + 0.5, w - 1, rowH - 1);
+      }
+      ctx.fillStyle = item.team === 0 ? COLORS.ink : COLORS.gold;
+      ctx.fillText(item.label, Math.round(boardW / 2), Math.round(y + rowH / 2) + 1);
+      y += rowH + 3;
+    }
+    ctx.restore();
   }
 
   private drawBall(b: SimBall, v: ViewState): void {

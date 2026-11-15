@@ -33,7 +33,7 @@ export default function Hub({ save, plan, planning, bossNext, onPlay, onDaily, o
     <div className="screen hub">
       <div className="hub__column">
         <header className="hub__top">
-          <Logo size={30} />
+          <Logo size={36} />
           <button className="round" onClick={() => setSheet(true)} aria-label="Settings">
             <IconSettings />
           </button>
