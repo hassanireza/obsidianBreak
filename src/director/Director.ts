@@ -4,6 +4,7 @@ import type { MatchKind, MatchSpec, RuleOverrides } from "../duel/Generator";
 import { toRating, tierOf } from "../duel/Rating";
 import type { MutatorId } from "../duel/types";
 import { hashString } from "../lib/rng";
+import { boardAspect } from "../lib/viewport";
 import { todayKey } from "../lib/rng";
 import type { SaveData } from "../lib/save";
 import { Bandit } from "./Bandit";
@@ -73,6 +74,7 @@ export class Director {
     const overrides: RuleOverrides = {};
 
     if (kind !== "daily") {
+      overrides.aspect = boardAspect();
       const segment = `${facts.tier}:${facts.input}`;
       for (const exp of this.rules.experiments) {
         const pick = this.bandit.choose(exp, segment);

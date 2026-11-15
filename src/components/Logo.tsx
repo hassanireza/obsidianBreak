@@ -1,12 +1,13 @@
 export default function Logo({ size = 34 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 32 32" aria-hidden="true">
-      <rect x="2" y="2" width="14" height="28" fill="#f6eacc" />
-      <rect x="16" y="2" width="14" height="28" fill="#52290e" />
-      <rect x="6" y="10" width="6" height="6" fill="#52290e" />
-      <rect x="20" y="18" width="6" height="6" fill="#f6eacc" />
-      <circle cx="9" cy="22" r="2.6" fill="#1b0f07" />
-      <circle cx="23" cy="9" r="2.6" fill="#e3b95f" />
+    <svg width={size} height={size} viewBox="0 0 12 12" aria-hidden="true" shapeRendering="crispEdges">
+      <rect width="12" height="12" fill="#52290e" />
+      {[6, 6, 5, 5, 6, 7, 7, 6, 5, 5, 6, 6].map((b, r) => (
+        <rect key={r} x="0" y={r} width={b} height="1" fill="#f6eacc" />
+      ))}
+      <rect x="8" y="6" width="1" height="1" fill="#d9654f" />
+      <circle cx="2.8" cy="8.4" r="0.78" fill="#1b0f07" shapeRendering="auto" />
+      <circle cx="9.4" cy="3.6" r="0.78" fill="#e3b95f" shapeRendering="auto" />
     </svg>
   );
 }

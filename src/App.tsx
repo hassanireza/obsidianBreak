@@ -9,6 +9,7 @@ import { finishMatch } from "./director/Progress";
 import type { MatchKind } from "./duel/Generator";
 import type { MatchEnd } from "./game/DuelEngine";
 import { ensureGoals, loadSave, writeSave } from "./lib/save";
+import { enterFullscreen } from "./lib/viewport";
 import type { SaveData, Settings } from "./lib/save";
 import "./styles/global.css";
 
@@ -63,9 +64,11 @@ export default function App() {
   }, [view]);
   useEffect(() => {
     document.documentElement.dataset.theme = night ? "night" : "day";
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", night ? "#1a0b03" : "#f6eacc");
   }, [night]);
 
   const launch = (p: Plan, kind: MatchKind) => {
+    enterFullscreen();
     director.noteMatchStart(p);
     nonce.current += 1;
     setActive({ plan: p, kind, nonce: nonce.current });

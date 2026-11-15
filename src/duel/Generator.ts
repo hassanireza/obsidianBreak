@@ -14,6 +14,8 @@ export interface RuleOverrides {
   playerTurnBonus?: number;
   disabledMutators?: MutatorId[];
   duration?: number;
+  /** Width to height of the board area on this device. Makes the board fill the screen. */
+  aspect?: number;
 }
 
 export interface MatchSpec {
@@ -56,7 +58,8 @@ export function buildConfig(seed: number, mutators: MutatorId[], rules: RuleOver
   const rng = mulberry32(seed);
   const has = (m: MutatorId) => mutators.includes(m);
   const cols = has("marathon") ? 20 : pick(rng, [16, 18, 20]);
-  const rows = has("marathon") ? 28 : pick(rng, [22, 24, 26]);
+  const fitted = rules.aspect ? Math.max(20, Math.min(30, Math.round(cols / rules.aspect))) : 0;
+  const rows = has("marathon") ? 28 : fitted || pick(rng, [22, 24, 26]);
   const half = cols / 2;
   const cells = new Array<number>(cols * rows).fill(0);
   const at = (x: number, y: number) => y * cols + x;

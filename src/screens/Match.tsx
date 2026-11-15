@@ -82,19 +82,15 @@ export default function Match({ plan, save, rules, lite, onFinish, onRematch, on
   return (
     <div className="screen match">
       <div className="match__column">
-        <div className="banner" aria-live="polite">
-          {[0, 1, 2, 3].map((i) => {
-            const b = hud.banner[i];
-            return (
-              <div key={b ? b.id : `empty-${i}`} className={`banner__row ${b ? (b.team === 0 ? "banner__row--latte" : "banner__row--roast") : "banner__row--empty"}`}>
-                {b ? b.label : ""}
-              </div>
-            );
-          })}
-        </div>
-
         <div className="board" ref={wrapRef}>
           <canvas ref={canvasRef} className="board__canvas" />
+          <div className="banner" aria-live="polite">
+            {hud.banner.map((b) => (
+              <div key={b.id} className={`banner__row ${b.team === 0 ? "banner__row--latte" : "banner__row--roast"}`}>
+                {b.label}
+              </div>
+            ))}
+          </div>
           {hud.phase === "countdown" && <div className="board__count">{hud.countdown || ""}</div>}
           {hud.photo && <div className="board__photo">Photo finish</div>}
           <button className="board__pause" onClick={() => setPaused(true)} aria-label="Pause">
@@ -130,7 +126,7 @@ export default function Match({ plan, save, rules, lite, onFinish, onRematch, on
             </button>
           ))}
         </div>
-        <p className="match__hint">Drag to pull your dark balls. Tap a card when it fills.{hud.assisting ? " Adaptive help on." : ""}</p>
+        <p className="match__hint">Drag to pull your dark balls. Tap a lit card to cast.{hud.assisting ? " Adaptive help on." : ""}</p>
       </div>
 
       {hud.phase === "paused" && !end && (
