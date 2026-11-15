@@ -84,18 +84,8 @@ export default function Match({ plan, save, rules, lite, onFinish, onRematch, on
       <div className="match__column">
         <div className="board" ref={wrapRef}>
           <canvas ref={canvasRef} className="board__canvas" />
-          <div className="banner" aria-live="polite">
-            {hud.banner.map((b) => (
-              <div key={b.id} className={`banner__row ${b.team === 0 ? "banner__row--latte" : "banner__row--roast"}`}>
-                {b.label}
-              </div>
-            ))}
-          </div>
           {hud.phase === "countdown" && <div className="board__count">{hud.countdown || ""}</div>}
           {hud.photo && <div className="board__photo">Photo finish</div>}
-          <button className="board__pause" onClick={() => setPaused(true)} aria-label="Pause">
-            <IconPause size={16} />
-          </button>
         </div>
 
         <div className="bars">
@@ -121,10 +111,13 @@ export default function Match({ plan, save, rules, lite, onFinish, onRematch, on
           {hud.cards.map((c, i) => (
             <button key={`${i}-${c.kind}`} className={`card ${c.ready ? "card--ready" : ""}`} disabled={!c.ready || hud.phase !== "playing"} onClick={() => cast(i)}>
               <span className="card__fill" style={{ width: `${Math.min(100, (hud.energy / c.cost) * 100)}%` }} />
-              <span className="card__name">{c.label}</span>
+              <span className="card__name">{c.label.replace(" + 10 SECONDS", "")}</span>
               <span className="card__cost">{c.ready ? "TAP" : Math.ceil(c.cost - hud.energy)}</span>
             </button>
           ))}
+          <button className="pausebtn" onClick={() => setPaused(true)} aria-label="Pause">
+            <IconPause size={18} />
+          </button>
         </div>
         <p className="match__hint">Drag to pull your dark balls. Tap a lit card to cast.{hud.assisting ? " Adaptive help on." : ""}</p>
       </div>
