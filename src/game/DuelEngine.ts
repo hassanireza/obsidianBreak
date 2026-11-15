@@ -270,7 +270,7 @@ export class DuelEngine {
       }
     }
     if (sim) {
-      this.renderer.render(sim, { time: this.clock, flipAnim: this.flipAnim, well: sim.wells[0] ? { ...sim.wells[0]! } : this.well ? { ...this.well, radius: 9 } : null, quality: foamBus.quality });
+      this.renderer.render(sim, { time: this.clock, banner: this.banner, flipAnim: this.flipAnim, well: sim.wells[0] ? { ...sim.wells[0]! } : this.well ? { ...this.well, radius: 9 } : null, quality: foamBus.quality });
       this.feedFoam(sim);
     }
     this.raf = requestAnimationFrame(this.loop);
